@@ -14,3 +14,7 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Google Book Finder"
 include ':app'
+include ':core'
+include ':data'
+include ':domain'
+include ':ui'

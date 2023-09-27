@@ -1,0 +1,5 @@
+apply from: "$rootDir/gradle/module-common.gradle"
+
+android {
+    namespace 'com.example.core'
+}

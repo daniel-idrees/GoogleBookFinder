@@ -1,0 +1,9 @@
+apply from: "$rootDir/gradle/module-common.gradle"
+
+android {
+    namespace 'com.example.domain'
+}
+
+dependencies {
+    testImplementation project(':core')
+}

@@ -1,0 +1,18 @@
+apply from: "$rootDir/gradle/module-common.gradle"
+
+
+android {
+    namespace 'com.example.data'
+}
+
+
+dependencies {
+    implementation project(':domain')
+    testImplementation project(':core')
+
+    // Retrofit
+    implementation "com.squareup.retrofit2:retrofit:2.9.0"
+
+    // Moshi
+    implementation "com.squareup.retrofit2:converter-moshi:2.9.0"
+}
