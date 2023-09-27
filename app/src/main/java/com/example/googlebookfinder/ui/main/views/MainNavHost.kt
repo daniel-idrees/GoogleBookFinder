@@ -38,7 +38,7 @@ fun MainNavHost(viewModel: MainViewModel) {
                     SearchScreenView(
                         viewState,
                         { query -> viewModel.searchBook(query) },
-                    ) { navController.navigate("result") }
+                    ) { navController.navigate(ResultScreen.route) }
                 }
             }
         }

@@ -30,7 +30,7 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun providePoiDataService(
+    fun provideBookFinderService(
         retrofitBuilder: Retrofit.Builder,
     ): BookFinderService {
         val retrofit = retrofitBuilder
