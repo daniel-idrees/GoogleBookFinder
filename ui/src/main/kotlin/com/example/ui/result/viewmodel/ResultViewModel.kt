@@ -13,6 +13,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.jetbrains.annotations.VisibleForTesting
 import javax.inject.Inject
 
 @HiltViewModel
@@ -38,6 +39,7 @@ class ResultViewModel @Inject constructor(
         }
     }
 
+    @androidx.annotation.VisibleForTesting
     private fun searchBook(searchQuery: String) {
         viewModelScope.launch(ioDispatcher) {
             _bookSearchResultState.emit(BookSearchResultState.Loading)
