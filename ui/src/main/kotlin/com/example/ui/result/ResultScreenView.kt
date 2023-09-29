@@ -1,6 +1,6 @@
 package com.example.ui.result
 
-import androidx.activity.compose.BackHandler
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,40 +15,51 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.domain.model.Book
-import com.example.ui.BookSearchResultState
 import com.example.ui.R
+import com.example.ui.result.state.BookSearchResultState
+import com.example.ui.result.viewmodel.ResultViewModel
+import com.example.ui.views.LoadingView
 
 @Composable
 fun ResultScreenView(
-    viewState: BookSearchResultState,
-    resetState: () -> Unit,
+    viewModel: ResultViewModel,
     goBack: () -> Unit,
 ) {
-    BackHandler(onBack = resetState)
-    when (viewState) {
-        is BookSearchResultState.Success -> {
-            if (viewState.books.isEmpty()) {
-                NoResultView(goBack)
-            } else {
-                ResultListView(viewState.books)
-            }
-        }
+    val viewState by viewModel.bookSearchResultState.collectAsStateWithLifecycle()
 
-        else -> goBack()
+    when (viewState) {
+        is BookSearchResultState.Loading -> LoadingView()
+        is BookSearchResultState.Error -> ShowErrorMessage(doAfterErrorIsShown = goBack)
+        is BookSearchResultState.EmptyResult -> NoResultView(onButtonClick = goBack)
+        is BookSearchResultState.Success -> ResultListView((viewState as BookSearchResultState.Success).books)
     }
 }
 
 @Composable
-private fun NoResultView(goBack: () -> Unit) {
+private fun ShowErrorMessage(doAfterErrorIsShown: () -> Unit) {
+    Toast.makeText(
+        LocalContext.current,
+        "Something went wrong",
+        Toast.LENGTH_LONG,
+    ).show()
+
+    doAfterErrorIsShown()
+}
+
+@Composable
+private fun NoResultView(onButtonClick: () -> Unit) {
     Column(
         modifier = Modifier.padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -60,7 +71,7 @@ private fun NoResultView(goBack: () -> Unit) {
             modifier = Modifier
                 .padding(horizontal = 60.dp)
                 .fillMaxWidth(),
-            onClick = goBack,
+            onClick = onButtonClick,
         ) {
             Text(
                 textAlign = TextAlign.Center,
@@ -145,22 +156,16 @@ private fun getAuthorText(authorsList: List<String>?): String {
 
 @Preview(showBackground = true)
 @Composable
-private fun EmptyListPreview() {
-    ResultScreenView(
-        BookSearchResultState.Success(listOf()),
-        {},
-    ) {}
+private fun ResultListPreview() {
+    ResultListView(
+        listOf(
+            Book("Title", listOf("Author"), ""),
+        ),
+    )
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun ResultListPreview() {
-    ResultScreenView(
-        BookSearchResultState.Success(
-            listOf(
-                Book("Title", listOf("Author"), ""),
-            ),
-        ),
-        {},
-    ) {}
+private fun EmptyListPreview() {
+    NoResultView {}
 }
