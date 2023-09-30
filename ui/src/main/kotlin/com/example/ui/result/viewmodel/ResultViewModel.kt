@@ -34,7 +34,7 @@ class ResultViewModel @Inject constructor(
         if (searchQuery != null) {
             searchBook(searchQuery)
         } else {
-            _bookSearchResultState.value = BookSearchResultState.Error
+            _bookSearchResultState.value = BookSearchResultState.Error("Something went wrong")
         }
     }
 

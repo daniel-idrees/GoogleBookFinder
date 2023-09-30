@@ -3,6 +3,7 @@ package com.example.ui.result.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import com.example.common.MainDispatcherRule
 import com.example.domain.model.Book
+import com.example.domain.model.BookDataResult
 import com.example.domain.usecase.GetBookListUseCase
 import com.example.ui.nav.ResultScreenArgumentSearchQueryKey
 import com.example.ui.result.state.BookSearchResultState
@@ -31,7 +32,7 @@ internal class ResultViewModelTest {
     fun `view state should be success if the usecase returns list of books`() {
         val mockBookList = listOf(Book())
         runBlocking {
-            whenever(getBookListUseCase.get(mockQuery)) doReturn mockBookList
+            whenever(getBookListUseCase.get(mockQuery)) doReturn BookDataResult.Success(mockBookList)
             val subject = ResultViewModel(
                 getBookListUseCase,
                 savedStateHandle,
@@ -43,9 +44,8 @@ internal class ResultViewModelTest {
 
     @Test
     fun `view state should be empty if the usecase returns empty list`() {
-        val mockBookList: List<Book> = emptyList()
         runBlocking {
-            whenever(getBookListUseCase.get(mockQuery)) doReturn mockBookList
+            whenever(getBookListUseCase.get(mockQuery)) doReturn BookDataResult.Empty
             val subject = ResultViewModel(
                 getBookListUseCase,
                 savedStateHandle,
@@ -58,13 +58,13 @@ internal class ResultViewModelTest {
     @Test
     fun `view state should be error if the usecase returns null`() {
         runBlocking {
-            whenever(getBookListUseCase.get(mockQuery)) doReturn null
+            whenever(getBookListUseCase.get(mockQuery)) doReturn BookDataResult.Error("error")
             val subject = ResultViewModel(
                 getBookListUseCase,
                 savedStateHandle,
                 mainDispatcherRule.testDispatcher,
             )
-            subject.bookSearchResultState.value shouldBe BookSearchResultState.Error
+            subject.bookSearchResultState.value shouldBe BookSearchResultState.Error("error")
         }
     }
 
@@ -76,6 +76,6 @@ internal class ResultViewModelTest {
             savedStateHandle,
             mainDispatcherRule.testDispatcher,
         )
-        subject.bookSearchResultState.value shouldBe BookSearchResultState.Error
+        subject.bookSearchResultState.value shouldBe BookSearchResultState.Error("Something went wrong")
     }
 }

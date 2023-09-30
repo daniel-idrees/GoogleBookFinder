@@ -1,10 +1,12 @@
 package com.example.data.repository
 
 import com.example.data.dto.ImageLinks
+import com.example.data.dto.Item
 import com.example.data.dto.SearchBookResponse
 import com.example.data.dto.VolumeInfo
 import com.example.data.network.BookFinderService
 import com.example.domain.model.Book
+import com.example.domain.model.BookDataResult
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import kotlinx.coroutines.runBlocking
@@ -29,7 +31,7 @@ class BookRepositoryImplTest {
         "",
         1,
         listOf(
-            com.example.data.dto.Item(
+            Item(
                 volumeInfo = VolumeInfo(
                     title = mockTitle,
                     authors = mockAuthorList,
@@ -38,28 +40,47 @@ class BookRepositoryImplTest {
             ),
         ),
     )
+
+    private val mockEmptyResponse = SearchBookResponse(
+        "",
+        1,
+        emptyList(),
+    )
+
     private val expected = listOf(Book(mockTitle, mockAuthorList, mockUrl))
 
     @Test
-    fun `getBooks should return book list when api response is successful`() {
+    fun `getBooks should return success when api response is successful and list is not empty`() {
         runBlocking {
             whenever(bookFinderService.getBookList(mockQueryString)) doReturn mockResponse
             val result = subject.getBooks(mockQueryString)
             verify(bookFinderService).getBookList(mockQueryString)
             verifyNoMoreInteractions(bookFinderService)
-            result shouldBe expected
+
+            result shouldBe BookDataResult.Success(expected)
         }
     }
 
     @Test
-    fun `getBooks should return null when api response throws exception`() {
+    fun `getBooks should return empty when api response is successful and list is empty`() {
+        runBlocking {
+            whenever(bookFinderService.getBookList(mockQueryString)) doReturn mockEmptyResponse
+            val result = subject.getBooks(mockQueryString)
+            verify(bookFinderService).getBookList(mockQueryString)
+            verifyNoMoreInteractions(bookFinderService)
+            result shouldBe BookDataResult.Empty
+        }
+    }
+
+    @Test
+    fun `getBooks should return general error when api response throws general exception`() {
         runBlocking {
             whenever(bookFinderService.getBookList(mockQueryString)) doThrow IllegalArgumentException()
             val result = subject.getBooks(mockQueryString)
             verify(bookFinderService).getBookList(mockQueryString)
             verifyNoMoreInteractions(bookFinderService)
-            result shouldNotBe expected
-            result shouldBe null
+            result shouldNotBe BookDataResult.Success(expected)
+            result shouldBe BookDataResult.Error("Something went wrong")
         }
     }
 }
