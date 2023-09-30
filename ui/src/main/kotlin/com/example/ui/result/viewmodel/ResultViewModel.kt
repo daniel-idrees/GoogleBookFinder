@@ -24,7 +24,7 @@ class ResultViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _bookSearchResultState =
-        MutableStateFlow<BookSearchResultState>(BookSearchResultState.EmptyResult)
+        MutableStateFlow<BookSearchResultState>(BookSearchResultState.Loading)
     val bookSearchResultState: StateFlow<BookSearchResultState>
         get() = _bookSearchResultState
 
