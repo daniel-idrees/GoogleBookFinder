@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -51,6 +52,7 @@ private fun Header() {
 
 @Composable
 private fun SearchInputField(onSearchButtonClick: (String) -> Unit) {
+    val focusManager = LocalFocusManager.current
     var text by remember { mutableStateOf("") }
 
     OutlinedTextField(
@@ -64,7 +66,10 @@ private fun SearchInputField(onSearchButtonClick: (String) -> Unit) {
         modifier = Modifier
             .padding(horizontal = 60.dp)
             .fillMaxWidth(),
-        onClick = { onSearchButtonClick.invoke(text) },
+        onClick = {
+            onSearchButtonClick.invoke(text)
+            focusManager.clearFocus()
+        },
     ) {
         Text(
             textAlign = TextAlign.Center,
