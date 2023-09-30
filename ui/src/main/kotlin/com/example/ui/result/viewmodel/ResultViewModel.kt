@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.di.IoDispatcher
-import com.example.domain.model.Book
+import com.example.domain.model.BookDataResult
 import com.example.domain.usecase.GetBookListUseCase
 import com.example.ui.nav.ResultScreenArgumentSearchQueryKey
 import com.example.ui.result.state.BookSearchResultState
@@ -38,20 +38,20 @@ class ResultViewModel @Inject constructor(
         }
     }
 
-    @androidx.annotation.VisibleForTesting
     private fun searchBook(searchQuery: String) {
         viewModelScope.launch(ioDispatcher) {
             _bookSearchResultState.emit(BookSearchResultState.Loading)
-            val list = getBookListUseCase.get(searchQuery)
-            updateUiState(list)
+            val result = getBookListUseCase.get(searchQuery)
+            updateUiState(result)
         }
     }
 
-    private suspend fun updateUiState(list: List<Book>?) {
-        when {
-            list == null -> _bookSearchResultState.emit(BookSearchResultState.Error)
-            list.isNotEmpty() -> _bookSearchResultState.emit(BookSearchResultState.Success(list))
-            else -> _bookSearchResultState.emit(BookSearchResultState.EmptyResult)
+    private suspend fun updateUiState(result: BookDataResult) {
+        val viewState = when (result) {
+            is BookDataResult.Empty -> BookSearchResultState.EmptyResult
+            is BookDataResult.Error -> BookSearchResultState.Error(result.errorMessage)
+            is BookDataResult.Success -> BookSearchResultState.Success(result.data)
         }
+        _bookSearchResultState.emit(viewState)
     }
 }

@@ -4,7 +4,7 @@ import com.example.domain.model.Book
 
 sealed class BookSearchResultState {
     data class Success(val books: List<Book>) : BookSearchResultState()
-    object Error : BookSearchResultState()
+    data class Error(val errorMessage: String) : BookSearchResultState()
     object Loading : BookSearchResultState()
     object EmptyResult : BookSearchResultState()
 }

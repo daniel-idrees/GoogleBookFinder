@@ -41,17 +41,21 @@ fun ResultScreenView(
 
     when (viewState) {
         is BookSearchResultState.Loading -> LoadingView()
-        is BookSearchResultState.Error -> ShowErrorMessage(doAfterErrorIsShown = goBack)
+        is BookSearchResultState.Error -> ShowErrorMessage(
+            errorMessage = (viewState as BookSearchResultState.Error).errorMessage,
+            doAfterErrorIsShown = goBack,
+        )
+
         is BookSearchResultState.EmptyResult -> NoResultView(onButtonClick = goBack)
         is BookSearchResultState.Success -> ResultListView((viewState as BookSearchResultState.Success).books)
     }
 }
 
 @Composable
-private fun ShowErrorMessage(doAfterErrorIsShown: () -> Unit) {
+private fun ShowErrorMessage(errorMessage: String, doAfterErrorIsShown: () -> Unit) {
     Toast.makeText(
         LocalContext.current,
-        "Something went wrong",
+        errorMessage,
         Toast.LENGTH_LONG,
     ).show()
 

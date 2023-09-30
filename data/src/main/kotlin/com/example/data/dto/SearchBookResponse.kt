@@ -8,7 +8,7 @@ data class SearchBookResponse(
     val items: List<Item>,
 )
 
-internal fun SearchBookResponse.map(): List<Book> {
+internal fun SearchBookResponse.toBookList(): List<Book> {
     val list = arrayListOf<Book>()
     items.forEach { item ->
         val book = Book(
