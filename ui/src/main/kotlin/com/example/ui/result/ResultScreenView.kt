@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
@@ -19,18 +18,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
 import com.example.domain.model.Book
-import com.example.ui.R
 import com.example.ui.result.state.BookSearchResultState
 import com.example.ui.result.viewmodel.ResultViewModel
+import com.example.ui.views.BookImageView
 import com.example.ui.views.LoadingView
+import com.example.ui.views.spaceS
 
 @Composable
 fun ResultScreenView(
@@ -65,12 +63,12 @@ private fun ShowErrorMessage(errorMessage: String, doAfterErrorIsShown: () -> Un
 @Composable
 private fun NoResultView(onButtonClick: () -> Unit) {
     Column(
-        modifier = Modifier.padding(16.dp),
+        modifier = Modifier.padding(spaceS),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
         Text(text = "No results found")
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(spaceS))
         Button(
             modifier = Modifier
                 .padding(horizontal = 60.dp)
@@ -88,10 +86,10 @@ private fun NoResultView(onButtonClick: () -> Unit) {
 
 @Composable
 private fun ResultListView(books: List<Book>) {
-    Spacer(modifier = Modifier.height(16.dp))
+    Spacer(modifier = Modifier.height(spaceS))
     LazyColumn(
         modifier = Modifier
-            .padding(horizontal = 20.dp)
+            .padding(horizontal = spaceS)
             .fillMaxWidth(),
     ) {
         items(books) { book ->
@@ -106,7 +104,7 @@ private fun ResultListView(books: List<Book>) {
             }
         }
     }
-    Spacer(modifier = Modifier.height(16.dp))
+    Spacer(modifier = Modifier.height(spaceS))
 }
 
 @Composable
@@ -117,30 +115,28 @@ private fun ResultListItem(
 ) {
     val image = imageUrl?.replace("http", "https") ?: ""
 
-    Card(Modifier.padding(16.dp)) {
+    Card(Modifier.padding(spaceS)) {
         Row(modifier = Modifier.fillMaxWidth()) {
-            AsyncImage(
-                model = image,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(100.dp)
-                    .padding(10.dp),
-
-                error = painterResource(id = R.drawable.book_placeholder),
-                placeholder = painterResource(id = R.drawable.book_placeholder),
-            )
-
-            Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.Center,
-            ) {
-                Text(text = "Title: $title", textAlign = TextAlign.Start)
-                Text(
-                    text = getAuthorText(authorsList),
-                    textAlign = TextAlign.Start,
-                )
-            }
+            BookImageView(image)
+            Content(title, authorsList)
         }
+    }
+}
+
+@Composable
+private fun Content(
+    title: String,
+    authorsList: List<String>?,
+) {
+    Column(
+        modifier = Modifier.padding(spaceS),
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Text(text = "Title: $title", textAlign = TextAlign.Start)
+        Text(
+            text = getAuthorText(authorsList),
+            textAlign = TextAlign.Start,
+        )
     }
 }
 
