@@ -3,7 +3,6 @@ package com.example.ui.search
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -23,19 +22,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.ui.views.spaceL
+import com.example.ui.views.spaceS
 
 @Composable
 fun SearchScreenView(
     navigateToResult: (String) -> Unit,
 ) {
     Column(
-        Modifier
-            .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
         Header()
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(spaceL))
         SearchInputField(onSearchButtonClick = navigateToResult)
     }
 }
@@ -61,7 +60,7 @@ private fun SearchInputField(onSearchButtonClick: (String) -> Unit) {
         label = { Text("Search a book") },
     )
 
-    Spacer(modifier = Modifier.height(16.dp))
+    Spacer(modifier = Modifier.height(spaceS))
     Button(
         modifier = Modifier
             .padding(horizontal = 60.dp)
