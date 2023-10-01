@@ -1,7 +1,7 @@
 package com.example.data.repository
 
 import com.example.core.di.IoDispatcher
-import com.example.data.dto.toBookList
+import com.example.data.dto.mapper.toBookList
 import com.example.data.network.BookFinderService
 import com.example.domain.model.BookDataResult
 import com.example.domain.model.getErrorResult
