@@ -3,13 +3,11 @@ package com.example.ui.result.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.core.di.IoDispatcher
 import com.example.domain.model.BookDataResult
 import com.example.domain.usecase.GetBookListUseCase
 import com.example.ui.nav.ResultScreenArgumentSearchQueryKey
 import com.example.ui.result.state.BookSearchResultState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -19,8 +17,6 @@ import javax.inject.Inject
 class ResultViewModel @Inject constructor(
     private val getBookListUseCase: GetBookListUseCase,
     savedStateHandle: SavedStateHandle,
-    @IoDispatcher
-    private val ioDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
 
     private val _bookSearchResultState =
@@ -39,7 +35,7 @@ class ResultViewModel @Inject constructor(
     }
 
     private fun searchBook(searchQuery: String) {
-        viewModelScope.launch(ioDispatcher) {
+        viewModelScope.launch {
             _bookSearchResultState.emit(BookSearchResultState.Loading)
             val result = getBookListUseCase.get(searchQuery)
             updateUiState(result)
