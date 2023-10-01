@@ -1,5 +1,6 @@
 package com.example.data.repository
 
+import com.example.data.common.MainDispatcherRule
 import com.example.data.dto.ImageLinks
 import com.example.data.dto.Item
 import com.example.data.dto.SearchBookResponse
@@ -10,6 +11,7 @@ import com.example.domain.model.BookDataResult
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import kotlinx.coroutines.runBlocking
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doThrow
@@ -19,9 +21,12 @@ import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 
 class BookRepositoryImplTest {
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
+
     private val bookFinderService: BookFinderService = mock()
     private val mockQueryString = "mockQuery"
-    private val subject = BookRepositoryImpl(bookFinderService)
+    private val subject = BookRepositoryImpl(bookFinderService, mainDispatcherRule.testDispatcher)
 
     private val mockTitle = "mockTitle"
     private val mockAuthorList = listOf("mockAuthor")

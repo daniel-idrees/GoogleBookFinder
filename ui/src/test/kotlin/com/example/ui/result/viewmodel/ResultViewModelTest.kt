@@ -16,7 +16,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 internal class ResultViewModelTest {
-
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
@@ -36,7 +35,6 @@ internal class ResultViewModelTest {
             val subject = ResultViewModel(
                 getBookListUseCase,
                 savedStateHandle,
-                mainDispatcherRule.testDispatcher,
             )
             subject.bookSearchResultState.value shouldBe BookSearchResultState.Success(mockBookList)
         }
@@ -49,7 +47,6 @@ internal class ResultViewModelTest {
             val subject = ResultViewModel(
                 getBookListUseCase,
                 savedStateHandle,
-                mainDispatcherRule.testDispatcher,
             )
             subject.bookSearchResultState.value shouldBe BookSearchResultState.EmptyResult
         }
@@ -62,7 +59,6 @@ internal class ResultViewModelTest {
             val subject = ResultViewModel(
                 getBookListUseCase,
                 savedStateHandle,
-                mainDispatcherRule.testDispatcher,
             )
             subject.bookSearchResultState.value shouldBe BookSearchResultState.Error("error")
         }
@@ -74,7 +70,6 @@ internal class ResultViewModelTest {
         val subject = ResultViewModel(
             getBookListUseCase,
             savedStateHandle,
-            mainDispatcherRule.testDispatcher,
         )
         subject.bookSearchResultState.value shouldBe BookSearchResultState.Error("Something went wrong")
     }
