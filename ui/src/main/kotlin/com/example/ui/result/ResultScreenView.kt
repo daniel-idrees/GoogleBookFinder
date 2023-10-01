@@ -4,9 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -68,10 +66,12 @@ private fun NoResultView(onButtonClick: () -> Unit) {
     Column(
         modifier = Modifier.padding(spaceS),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.spacedBy(
+            space = spaceS,
+            alignment = Alignment.CenterVertically,
+        ),
     ) {
         Text(text = "No results found")
-        Spacer(modifier = Modifier.height(spaceS))
         Button(
             modifier = Modifier
                 .padding(horizontal = 60.dp)
@@ -92,7 +92,6 @@ private fun ResultListView(
     books: List<Book>,
     getAuthorText: (List<String>) -> String,
 ) {
-    Spacer(modifier = Modifier.height(spaceS))
     LazyColumn(
         modifier = Modifier
             .padding(horizontal = spaceS)
@@ -108,7 +107,6 @@ private fun ResultListView(
             }
         }
     }
-    Spacer(modifier = Modifier.height(spaceS))
 }
 
 @Composable
@@ -117,8 +115,12 @@ private fun ResultListItem(
     authorsList: String,
     imageUrl: String?,
 ) {
-    Card(Modifier.padding(spaceS)) {
-        Row(modifier = Modifier.fillMaxWidth()) {
+    Card(
+        Modifier
+            .fillMaxWidth()
+            .padding(spaceS),
+    ) {
+        Row {
             BookImageView(imageUrl)
             Content(title, authorsList)
         }
