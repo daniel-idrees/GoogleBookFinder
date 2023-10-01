@@ -50,4 +50,17 @@ class ResultViewModel @Inject constructor(
         }
         _bookSearchResultState.emit(viewState)
     }
+
+    fun getAuthorText(authorsList: List<String>): String {
+        if (authorsList.isEmpty()) {
+            return "Unknown"
+        }
+
+        var authors = ""
+        authorsList.forEach { a ->
+            authors += if (authors.isNotEmpty()) ", $a" else a
+        }
+
+        return authors.ifEmpty { "Unknown" }
+    }
 }

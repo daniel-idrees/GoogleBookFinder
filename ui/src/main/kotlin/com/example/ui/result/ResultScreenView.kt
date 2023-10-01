@@ -45,7 +45,10 @@ fun ResultScreenView(
         )
 
         is BookSearchResultState.EmptyResult -> NoResultView(onButtonClick = goBack)
-        is BookSearchResultState.Success -> ResultListView((viewState as BookSearchResultState.Success).books)
+        is BookSearchResultState.Success -> ResultListView(
+            (viewState as BookSearchResultState.Success).books,
+            viewModel::getAuthorText,
+        )
     }
 }
 
@@ -85,7 +88,10 @@ private fun NoResultView(onButtonClick: () -> Unit) {
 }
 
 @Composable
-private fun ResultListView(books: List<Book>) {
+private fun ResultListView(
+    books: List<Book>,
+    getAuthorText: (List<String>) -> String,
+) {
     Spacer(modifier = Modifier.height(spaceS))
     LazyColumn(
         modifier = Modifier
@@ -94,13 +100,11 @@ private fun ResultListView(books: List<Book>) {
     ) {
         items(books) { book ->
             with(book) {
-                if (title != null) {
-                    ResultListItem(
-                        title ?: "unknown",
-                        book.authors,
-                        book.imageUrl,
-                    )
-                }
+                ResultListItem(
+                    title,
+                    getAuthorText(book.authors),
+                    book.imageUrl,
+                )
             }
         }
     }
@@ -110,14 +114,12 @@ private fun ResultListView(books: List<Book>) {
 @Composable
 private fun ResultListItem(
     title: String,
-    authorsList: List<String>?,
+    authorsList: String,
     imageUrl: String?,
 ) {
-    val image = imageUrl?.replace("http", "https") ?: ""
-
     Card(Modifier.padding(spaceS)) {
         Row(modifier = Modifier.fillMaxWidth()) {
-            BookImageView(image)
+            BookImageView(imageUrl)
             Content(title, authorsList)
         }
     }
@@ -126,32 +128,18 @@ private fun ResultListItem(
 @Composable
 private fun Content(
     title: String,
-    authorsList: List<String>?,
+    authorText: String,
 ) {
     Column(
         modifier = Modifier.padding(spaceS),
         verticalArrangement = Arrangement.Center,
     ) {
-        Text(text = "Title: $title", textAlign = TextAlign.Start)
+        Text(text = title, textAlign = TextAlign.Start)
         Text(
-            text = getAuthorText(authorsList),
+            text = authorText,
             textAlign = TextAlign.Start,
         )
     }
-}
-
-private fun getAuthorText(authorsList: List<String>?): String {
-    val authorLabel =
-        "Author" + (if (authorsList != null && authorsList.size > 1) "s" else "") + ":"
-    var authors = ""
-    authorsList?.forEach { a ->
-        authors += if (authors.isNotEmpty()) ", $a" else a
-    }
-    if (authors.isEmpty()) {
-        authors = "Unknown"
-    }
-
-    return "$authorLabel $authors"
 }
 
 @Preview(showBackground = true)
@@ -161,7 +149,7 @@ private fun ResultListPreview() {
         listOf(
             Book("Title", listOf("Author"), ""),
         ),
-    )
+    ) { "Author" }
 }
 
 @Preview(showBackground = true)
