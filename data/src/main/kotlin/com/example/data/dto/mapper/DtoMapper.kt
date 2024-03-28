@@ -9,9 +9,16 @@ internal fun SearchBookResponse.toBookList(): List<Book> {
         val book = Book(
             title = item.volumeInfo?.title ?: "unknown",
             authors = item.volumeInfo?.authors ?: emptyList(),
-            imageUrl = DtoMapperHelper.getImageUrl(item.volumeInfo?.imageLinks?.thumbnail),
+            imageUrl = item.volumeInfo?.imageLinks?.thumbnail.toHttpsUrl(),
         )
         list.add(book)
     }
     return list
 }
+
+private fun String?.toHttpsUrl(): String? =
+    if (this?.contains("https", ignoreCase = true) == false) {
+        replace("http", "https")
+    } else {
+        this
+    }
