@@ -21,29 +21,26 @@ internal class ResultViewModelTest {
 
     private val getBookListUseCase: GetBookListUseCase = mock()
 
-    private val mockQuery = "mockQuery"
-
     private val savedStateHandle: SavedStateHandle = mock {
-        whenever(this.mock.get<String>(ResultScreenArgumentSearchQueryKey)) doReturn mockQuery
+        whenever(mock.get<String>(ResultScreenArgumentSearchQueryKey)) doReturn "query"
     }
 
     @Test
-    fun `view state should be success if the usecase returns list of books`() {
-        val mockBookList = listOf(Book())
-        runBlocking {
-            whenever(getBookListUseCase.get(mockQuery)) doReturn BookDataResult.Success(mockBookList)
-            val subject = ResultViewModel(
-                getBookListUseCase,
-                savedStateHandle,
-            )
-            subject.bookSearchResultState.value shouldBe BookSearchResultState.Success(mockBookList)
-        }
+    fun `view state should be success if the usecase returns list of books`() = runBlocking {
+        val bookList = listOf(Book("", emptyList(), ""))
+        whenever(getBookListUseCase.get("query")) doReturn BookDataResult.Success(bookList)
+        val subject = ResultViewModel(
+            getBookListUseCase,
+            savedStateHandle,
+        )
+        subject.bookSearchResultState.value shouldBe BookSearchResultState.Success(bookList)
     }
+
 
     @Test
     fun `view state should be empty if the usecase returns empty list`() {
         runBlocking {
-            whenever(getBookListUseCase.get(mockQuery)) doReturn BookDataResult.Empty
+            whenever(getBookListUseCase.get("query")) doReturn BookDataResult.Empty
             val subject = ResultViewModel(
                 getBookListUseCase,
                 savedStateHandle,
@@ -55,7 +52,7 @@ internal class ResultViewModelTest {
     @Test
     fun `view state should be error if the usecase returns null`() {
         runBlocking {
-            whenever(getBookListUseCase.get(mockQuery)) doReturn BookDataResult.Error("error")
+            whenever(getBookListUseCase.get("query")) doReturn BookDataResult.Error("error")
             val subject = ResultViewModel(
                 getBookListUseCase,
                 savedStateHandle,
