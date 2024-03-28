@@ -29,7 +29,7 @@ import com.example.ui.views.LoadingView
 import com.example.ui.views.spaceS
 
 @Composable
-fun ResultScreenView(
+internal fun ResultScreenView(
     viewModel: ResultViewModel,
     goBack: () -> Unit,
 ) {
@@ -120,7 +120,9 @@ private fun ResultListItem(
             .fillMaxWidth()
             .padding(spaceS),
     ) {
-        Row {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             BookImageView(imageUrl)
             Content(title, authorsList)
         }
