@@ -16,39 +16,35 @@ class GetBookListUseCaseTest {
     private val bookRepository: BookRepository = mock()
     private val subject = GetBookListUseCase(bookRepository)
 
-    private val mockQuery = "mockQuery"
+    private val fakeQuery = "fakeQuery"
 
     @Test
-    fun `get should return book list if the repository returns the book list`() {
-        val mockBookList = listOf<Book>()
-        runBlocking {
-            whenever(bookRepository.getBooks(mockQuery)) doReturn BookDataResult.Success(mockBookList)
-            val result = subject.get(mockQuery)
-            verify(bookRepository).getBooks(mockQuery)
-            verifyNoMoreInteractions(bookRepository)
-            result shouldBe BookDataResult.Success(mockBookList)
-        }
+    fun `get should return book list if the repository returns the book list`() = runBlocking {
+        val bookList = listOf(Book("", listOf(), ""))
+        whenever(bookRepository.getBooks(fakeQuery)) doReturn BookDataResult.Success(bookList)
+        val result = subject.get(fakeQuery)
+        verify(bookRepository).getBooks(fakeQuery)
+        verifyNoMoreInteractions(bookRepository)
+        result shouldBe BookDataResult.Success(bookList)
     }
 
-    @Test
-    fun `get should return error if the repository returns error`() {
-        runBlocking {
-            whenever(bookRepository.getBooks(mockQuery)) doReturn BookDataResult.Error("error")
-            val result = subject.get(mockQuery)
-            verify(bookRepository).getBooks(mockQuery)
-            verifyNoMoreInteractions(bookRepository)
-            result shouldBe BookDataResult.Error("error")
-        }
-    }
 
     @Test
-    fun `get should return empty if the repository returns empty`() {
-        runBlocking {
-            whenever(bookRepository.getBooks(mockQuery)) doReturn BookDataResult.Empty
-            val result = subject.get(mockQuery)
-            verify(bookRepository).getBooks(mockQuery)
-            verifyNoMoreInteractions(bookRepository)
-            result shouldBe BookDataResult.Empty
-        }
+    fun `get should return error if the repository returns error`() = runBlocking {
+        whenever(bookRepository.getBooks(fakeQuery)) doReturn BookDataResult.Error("error")
+        val result = subject.get(fakeQuery)
+        verify(bookRepository).getBooks(fakeQuery)
+        verifyNoMoreInteractions(bookRepository)
+        result shouldBe BookDataResult.Error("error")
+    }
+
+
+    @Test
+    fun `get should return empty if the repository returns empty`() = runBlocking {
+        whenever(bookRepository.getBooks(fakeQuery)) doReturn BookDataResult.Empty
+        val result = subject.get(fakeQuery)
+        verify(bookRepository).getBooks(fakeQuery)
+        verifyNoMoreInteractions(bookRepository)
+        result shouldBe BookDataResult.Empty
     }
 }
