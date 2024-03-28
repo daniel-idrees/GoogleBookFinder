@@ -26,11 +26,11 @@ class BookRepositoryImplTest {
 
     private val bookFinderService: BookFinderService = mock()
     private val mockQueryString = "mockQuery"
-    private val subject = BookRepositoryImpl(bookFinderService, mainDispatcherRule.testDispatcher)
 
-    private val mockTitle = "mockTitle"
-    private val mockAuthorList = listOf("mockAuthor")
-    private val mockUrl = "mockUrl"
+    private val bookTitle = "fakeTitle"
+    private val authorList = listOf("fakeAuthor")
+    private val thumbnailUrlWithHttp = "http://fakeUrl"
+    private val thumbnailUrlWithHttps = "https://fakeUrl"
 
     private val mockResponse = SearchBookResponse(
         "",
@@ -38,21 +38,23 @@ class BookRepositoryImplTest {
         listOf(
             Item(
                 volumeInfo = VolumeInfo(
-                    title = mockTitle,
-                    authors = mockAuthorList,
-                    imageLinks = ImageLinks(thumbnail = mockUrl),
+                    title = bookTitle,
+                    authors = authorList,
+                    imageLinks = ImageLinks(thumbnail = thumbnailUrlWithHttp),
                 ),
             ),
         ),
     )
 
-    private val mockEmptyResponse = SearchBookResponse(
+    private val emptySearchBookResponse = SearchBookResponse(
         "",
         1,
         emptyList(),
     )
 
-    private val expected = listOf(Book(mockTitle, mockAuthorList, mockUrl))
+    private val expected = listOf(Book(bookTitle, authorList, thumbnailUrlWithHttps))
+
+    private val subject = BookRepositoryImpl(bookFinderService, mainDispatcherRule.testDispatcher)
 
     @Test
     fun `getBooks should return success when api response is successful and list is not empty`() {
@@ -69,7 +71,7 @@ class BookRepositoryImplTest {
     @Test
     fun `getBooks should return empty when api response is successful and list is empty`() {
         runBlocking {
-            whenever(bookFinderService.getBookList(mockQueryString)) doReturn mockEmptyResponse
+            whenever(bookFinderService.getBookList(mockQueryString)) doReturn emptySearchBookResponse
             val result = subject.getBooks(mockQueryString)
             verify(bookFinderService).getBookList(mockQueryString)
             verifyNoMoreInteractions(bookFinderService)
