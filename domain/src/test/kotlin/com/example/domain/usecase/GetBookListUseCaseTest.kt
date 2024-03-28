@@ -12,7 +12,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 
-class GetBookListUseCaseTest {
+internal class GetBookListUseCaseTest {
     private val bookRepository: BookRepository = mock()
     private val subject = GetBookListUseCase(bookRepository)
 
