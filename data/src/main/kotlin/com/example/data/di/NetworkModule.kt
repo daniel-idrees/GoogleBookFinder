@@ -16,27 +16,23 @@ internal class NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient {
-        return OkHttpClient().newBuilder().build()
-    }
+    fun provideOkHttpClient(): OkHttpClient =
+        OkHttpClient().newBuilder().build()
 
     @Provides
     @Singleton
-    fun provideRetrofitBuilder(client: OkHttpClient): Retrofit.Builder {
-        return Retrofit.Builder()
+    fun provideRetrofitBuilder(client: OkHttpClient): Retrofit.Builder =
+        Retrofit.Builder()
             .addConverterFactory(MoshiConverterFactory.create())
             .client(client)
-    }
 
     @Provides
     @Singleton
     fun provideBookFinderService(
         retrofitBuilder: Retrofit.Builder,
-    ): BookFinderService {
-        val retrofit = retrofitBuilder
+    ): BookFinderService =
+        retrofitBuilder
             .baseUrl("https://www.googleapis.com/books/")
             .build()
-
-        return retrofit.create(BookFinderService::class.java)
-    }
+            .create(BookFinderService::class.java)
 }
