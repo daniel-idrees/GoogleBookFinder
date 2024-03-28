@@ -25,14 +25,14 @@ class BookRepositoryImplTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     private val bookFinderService: BookFinderService = mock()
-    private val mockQueryString = "mockQuery"
+    private val queryString = "fakeQuery"
 
     private val bookTitle = "fakeTitle"
     private val authorList = listOf("fakeAuthor")
     private val thumbnailUrlWithHttp = "http://fakeUrl"
     private val thumbnailUrlWithHttps = "https://fakeUrl"
 
-    private val mockResponse = SearchBookResponse(
+    private val fakeResponse = SearchBookResponse(
         "",
         1,
         listOf(
@@ -57,37 +57,85 @@ class BookRepositoryImplTest {
     private val subject = BookRepositoryImpl(bookFinderService, mainDispatcherRule.testDispatcher)
 
     @Test
-    fun `getBooks should return success when api response is successful and list is not empty`() {
+    fun `getBooks should return success when api response is successful and list is not empty`() =
         runBlocking {
-            whenever(bookFinderService.getBookList(mockQueryString)) doReturn mockResponse
-            val result = subject.getBooks(mockQueryString)
-            verify(bookFinderService).getBookList(mockQueryString)
+            whenever(bookFinderService.getBookList(queryString)) doReturn fakeResponse
+            val result = subject.getBooks(queryString)
+            verify(bookFinderService).getBookList(queryString)
             verifyNoMoreInteractions(bookFinderService)
 
             result shouldBe BookDataResult.Success(expected)
         }
-    }
+
 
     @Test
-    fun `getBooks should return empty when api response is successful and list is empty`() {
+    fun `getBooks should return the thumbnail unchanged if it already has https`() =
         runBlocking {
-            whenever(bookFinderService.getBookList(mockQueryString)) doReturn emptySearchBookResponse
-            val result = subject.getBooks(mockQueryString)
-            verify(bookFinderService).getBookList(mockQueryString)
+            val searchResponse = fakeResponse.copy(
+                items = listOf(
+                    Item(
+                        volumeInfo = VolumeInfo(
+                            title = bookTitle,
+                            authors = authorList,
+                            imageLinks = ImageLinks(thumbnail = thumbnailUrlWithHttps),
+                        ),
+                    ),
+                )
+            )
+
+            whenever(bookFinderService.getBookList(queryString)) doReturn searchResponse
+            val result = subject.getBooks(queryString)
+            verify(bookFinderService).getBookList(queryString)
+            verifyNoMoreInteractions(bookFinderService)
+
+            result shouldBe BookDataResult.Success(expected)
+        }
+
+    @Test
+    fun `getBooks should return the thumbnail null if it was null in the response`() =
+        runBlocking {
+            val searchResponse = fakeResponse.copy(
+                items = listOf(
+                    Item(
+                        volumeInfo = VolumeInfo(
+                            title = bookTitle,
+                            authors = authorList,
+                            imageLinks = null,
+                        ),
+                    ),
+                )
+            )
+
+            val expectedResultWithNoThumbnail = listOf(Book(bookTitle, authorList, null))
+
+            whenever(bookFinderService.getBookList(queryString)) doReturn searchResponse
+            val result = subject.getBooks(queryString)
+            verify(bookFinderService).getBookList(queryString)
+            verifyNoMoreInteractions(bookFinderService)
+
+            result shouldBe BookDataResult.Success(expectedResultWithNoThumbnail)
+        }
+
+    @Test
+    fun `getBooks should return empty when api response is successful and list is empty`() =
+        runBlocking {
+            whenever(bookFinderService.getBookList(queryString)) doReturn emptySearchBookResponse
+            val result = subject.getBooks(queryString)
+            verify(bookFinderService).getBookList(queryString)
             verifyNoMoreInteractions(bookFinderService)
             result shouldBe BookDataResult.Empty
         }
-    }
+
 
     @Test
-    fun `getBooks should return general error when api response throws general exception`() {
+    fun `getBooks should return general error when api response throws general exception`() =
         runBlocking {
-            whenever(bookFinderService.getBookList(mockQueryString)) doThrow IllegalArgumentException()
-            val result = subject.getBooks(mockQueryString)
-            verify(bookFinderService).getBookList(mockQueryString)
+            whenever(bookFinderService.getBookList(queryString)) doThrow IllegalArgumentException()
+            val result = subject.getBooks(queryString)
+            verify(bookFinderService).getBookList(queryString)
             verifyNoMoreInteractions(bookFinderService)
             result shouldNotBe BookDataResult.Success(expected)
             result shouldBe BookDataResult.Error("Something went wrong")
         }
-    }
 }
+
