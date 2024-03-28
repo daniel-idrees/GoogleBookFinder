@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.sp
 import com.example.ui.views.spaceL
 
 @Composable
-fun SearchScreenView(
+internal fun SearchScreenView(
     navigateToResult: (String) -> Unit,
 ) {
     Column(

@@ -12,7 +12,7 @@ import com.example.ui.R
 private val imageSize = 100.dp
 
 @Composable
-fun BookImageView(imageUrl: String?) {
+internal fun BookImageView(imageUrl: String?) {
     AsyncImage(
         model = imageUrl,
         contentDescription = null,
