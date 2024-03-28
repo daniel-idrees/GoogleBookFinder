@@ -6,15 +6,23 @@ The aim of this project is to share an example of writing testable and maintaina
 
 In this repository you'll find:
 
- - User Interface built with Jetpack Compose
- - A single-activity architecture, using Navigation Compose.
- - MVVM architectural pattern.
- - Reactive UIs using Flow and coroutines for asynchronous operations.
- - Clean architecture.
- - A presentation layer that contains Compose Views and a ViewModel.
- - A domain layer with a use case.
- - A data layer with a repository and a network data source that uses retrofit for network calls.
- - A collection of unit tests for the repository, use case and ViewModel using Mockito and junit.
+ - Kotlin
+ - Model-View-ViewModel (MVVM) architectural pattern
+ - Multi Module
+ - A single-activity architecture, using Navigation Compose
+ - Hilt for dependency injection.
+ - Jetpack Compose for building UI
+ - Retrofit for network calls
+ - Coroutine for asynchronous operations
+ - Flow for handling data asynchronously
+ - Mockito for unit testings with a collection of unit tests for the repository, use case and ViewModel.
  - Dependency injection using Hilt.
- - Image loading using coil.
+ - Coil for Image loading.
+
+ - Clean architecture.
+   - A presentation layer that contains Compose Views and a ViewModel.
+   - A domain layer with a use case.
+   - A data layer with a repository and a network data source that uses retrofit for network calls.
+   - Domain layer is independent. Both Data and Presentation layers depend on Domain.
+
 
