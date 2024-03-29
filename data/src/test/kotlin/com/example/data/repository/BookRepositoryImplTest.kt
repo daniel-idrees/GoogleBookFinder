@@ -27,7 +27,7 @@ internal class BookRepositoryImplTest {
 
     private val bookFinderService: BookFinderService = mock()
 
-    private val subject = BookRepositoryImpl(bookFinderService, mainDispatcherRule.testDispatcher)
+    private val subject = BookRepositoryImpl(bookFinderService)
 
     @Test
     fun `getBooks should return success when api response is successful and list is not empty`() =
