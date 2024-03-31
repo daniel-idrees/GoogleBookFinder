@@ -9,6 +9,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navOptions
 import com.example.ui.nav.SearchScreen
 
+const val SEARCH_ROUTE = "search"
+
 fun NavGraphBuilder.searchScreen(
     content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit,
 ) = composable(SearchScreen.route, content = content)

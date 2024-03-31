@@ -1,13 +1,13 @@
 package com.example.ui.nav
 
 import android.net.Uri
+import com.example.ui.result.navigation.RESULT_ROUTE
+import com.example.ui.search.nav.SEARCH_ROUTE
 
 sealed class Screen(val route: String)
-object ResultScreen : Screen("result/{$ResultScreenArgumentSearchQueryKey}")
+object ResultScreen : Screen(RESULT_ROUTE)
 
-object SearchScreen : Screen("search")
-
-const val ResultScreenArgumentSearchQueryKey = "searchQuery"
+object SearchScreen : Screen(SEARCH_ROUTE)
 
 fun createRouteWithPathArguments(route: String, vararg arguments: String): String {
     val builder = Uri.parse(route).buildUpon()
