@@ -1,14 +1,18 @@
 package com.example.ui.result.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
+import app.cash.turbine.test
 import com.example.common.MainDispatcherRule
 import com.example.domain.model.Book
 import com.example.domain.model.BookDataResult
 import com.example.domain.usecase.GetBookListUseCase
-import com.example.ui.nav.ResultScreenArgumentSearchQueryKey
-import com.example.ui.result.state.BookSearchResultState
-import io.kotest.common.runBlocking
+import com.example.ui.result.navigation.SEARCH_QUERY_ARG
+import com.example.ui.result.state.ResultViewState
 import io.kotest.matchers.shouldBe
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.doReturn
@@ -19,55 +23,85 @@ internal class ResultViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private val getBookListUseCase: GetBookListUseCase = mock()
+    val getBookListUseCase: GetBookListUseCase = mock()
 
     private val savedStateHandle: SavedStateHandle = mock {
-        whenever(mock.get<String>(ResultScreenArgumentSearchQueryKey)) doReturn "query"
+        whenever(mock.get<String>(SEARCH_QUERY_ARG)) doReturn "query"
+
+        whenever(
+            mock.getStateFlow(
+                key = SEARCH_QUERY_ARG,
+                initialValue = ""
+            )
+        ) doReturn MutableStateFlow("query").asStateFlow()
+    }
+
+    private val subject by lazy {
+        ResultViewModel(
+            getBookListUseCase,
+            savedStateHandle,
+        )
     }
 
     @Test
-    fun `view state should be success if the usecase returns list of books`() = runBlocking {
+    fun `view state should be loading initially`() = runTest {
+        subject.resultViewState.value shouldBe ResultViewState.Loading
+    }
+
+
+
+    @Test
+    fun `view state should be success if the usecase returns list of books`() = runTest {
+       // when
         val bookList = listOf(Book("", emptyList(), ""))
-        whenever(getBookListUseCase.get("query")) doReturn BookDataResult.Success(bookList)
-        val subject = ResultViewModel(
-            getBookListUseCase,
-            savedStateHandle,
-        )
-        subject.bookSearchResultState.value shouldBe BookSearchResultState.Success(bookList)
+        whenever(getBookListUseCase("query")) doReturn flowOf(BookDataResult.Success(bookList))
+
+        // then
+        subject.resultViewState.test {
+            val result = awaitItem()
+            result shouldBe ResultViewState.Success(bookList)
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
 
     @Test
-    fun `view state should be empty if the usecase returns empty list`() {
-        runBlocking {
-            whenever(getBookListUseCase.get("query")) doReturn BookDataResult.Empty
-            val subject = ResultViewModel(
-                getBookListUseCase,
-                savedStateHandle,
-            )
-            subject.bookSearchResultState.value shouldBe BookSearchResultState.EmptyResult
+    fun `view state should be empty if the usecase returns empty list`() = runTest {
+        // when
+        whenever(getBookListUseCase("query")) doReturn flowOf(BookDataResult.Empty)
+
+        // then
+        subject.resultViewState.test {
+            val result = awaitItem()
+            result shouldBe ResultViewState.Empty
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `view state should be error if the usecase returns null`() {
-        runBlocking {
-            whenever(getBookListUseCase.get("query")) doReturn BookDataResult.Error("error")
-            val subject = ResultViewModel(
-                getBookListUseCase,
-                savedStateHandle,
-            )
-            subject.bookSearchResultState.value shouldBe BookSearchResultState.Error("error")
+    fun `view state should be error if the usecase returns error`() = runTest {
+        // when
+        whenever(getBookListUseCase("query")) doReturn flowOf(BookDataResult.Error)
+
+        // then
+        subject.resultViewState.test {
+            val result = awaitItem()
+            result shouldBe ResultViewState.Error
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `view state should be error there is no search query argument`() {
-        whenever(savedStateHandle.get<String>(ResultScreenArgumentSearchQueryKey)) doReturn null
-        val subject = ResultViewModel(
-            getBookListUseCase,
-            savedStateHandle,
-        )
-        subject.bookSearchResultState.value shouldBe BookSearchResultState.Error("Something went wrong")
-    }
+    fun `view state should be no internet connection if the usecase returns  no internet connection`() =
+        runTest {
+            // when
+            whenever(getBookListUseCase("query")) doReturn flowOf(BookDataResult.NoInternetConnection)
+
+            // then
+            subject.resultViewState.test {
+                val result = awaitItem()
+                result shouldBe ResultViewState.NoInternetConnection
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
 }

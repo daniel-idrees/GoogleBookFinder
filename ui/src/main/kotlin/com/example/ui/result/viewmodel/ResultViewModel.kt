@@ -5,13 +5,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.model.BookDataResult
 import com.example.domain.usecase.GetBookListUseCase
-import com.example.ui.nav.ResultScreenArgumentSearchQueryKey
-import com.example.ui.result.state.BookSearchResultState
+import com.example.ui.result.navigation.SEARCH_QUERY_ARG
+import com.example.ui.result.state.ResultViewState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class ResultViewModel @Inject constructor(
@@ -19,48 +23,25 @@ class ResultViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val _bookSearchResultState =
-        MutableStateFlow<BookSearchResultState>(BookSearchResultState.Loading)
-    val bookSearchResultState: StateFlow<BookSearchResultState>
-        get() = _bookSearchResultState
+    private val searchQuery = savedStateHandle.getStateFlow(
+        key = SEARCH_QUERY_ARG,
+        initialValue = ""
+    )
 
-    private val searchQuery = savedStateHandle.get<String>(ResultScreenArgumentSearchQueryKey)
-
-    init {
-        if (searchQuery != null) {
-            searchBook(searchQuery)
-        } else {
-            _bookSearchResultState.value = BookSearchResultState.Error("Something went wrong")
-        }
-    }
-
-    private fun searchBook(searchQuery: String) {
-        viewModelScope.launch {
-            _bookSearchResultState.emit(BookSearchResultState.Loading)
-            val result = getBookListUseCase.get(searchQuery)
-            updateUiState(result)
-        }
-    }
-
-    private suspend fun updateUiState(result: BookDataResult) {
-        val viewState = when (result) {
-            is BookDataResult.Empty -> BookSearchResultState.EmptyResult
-            is BookDataResult.Error -> BookSearchResultState.Error(result.errorMessage)
-            is BookDataResult.Success -> BookSearchResultState.Success(result.data)
-        }
-        _bookSearchResultState.emit(viewState)
-    }
-
-    fun getAuthorText(authorsList: List<String>): String {
-        if (authorsList.isEmpty()) {
-            return "Unknown"
-        }
-
-        var authors = ""
-        authorsList.forEach { a ->
-            authors += if (authors.isNotEmpty()) ", $a" else a
-        }
-
-        return authors.ifEmpty { "Unknown" }
-    }
+    val resultViewState: StateFlow<ResultViewState> =
+        searchQuery.flatMapLatest { query ->
+            getBookListUseCase(query)
+                .map { result ->
+                    when (result) {
+                        BookDataResult.Empty -> ResultViewState.Empty
+                        BookDataResult.Error -> ResultViewState.Error
+                        BookDataResult.NoInternetConnection -> ResultViewState.NoInternetConnection
+                        is BookDataResult.Success -> ResultViewState.Success(result.data)
+                    }
+                }.catch { emit(ResultViewState.Error) }
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5.seconds.inWholeMilliseconds),
+            initialValue = ResultViewState.Loading
+        )
 }
