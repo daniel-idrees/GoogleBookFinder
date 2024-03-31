@@ -60,7 +60,7 @@ internal class BookRepositoryImplTest {
             val result = subject.getBooks(queryString)
             verify(bookFinderService).getBookList(queryString)
             verifyNoMoreInteractions(bookFinderService)
-            result shouldBe BookDataResult.Error("Something went wrong")
+            result shouldBe BookDataResult.Error
         }
 }
 
