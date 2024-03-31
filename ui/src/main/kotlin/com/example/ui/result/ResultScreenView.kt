@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.model.Book
-import com.example.ui.result.state.BookSearchResultState
+import com.example.ui.result.state.ResultViewState
 import com.example.ui.result.viewmodel.ResultViewModel
 import com.example.ui.views.BookImageView
 import com.example.ui.views.LoadingView
@@ -33,19 +33,22 @@ internal fun ResultScreenView(
     viewModel: ResultViewModel,
     goBack: () -> Unit,
 ) {
-    val viewState by viewModel.bookSearchResultState.collectAsStateWithLifecycle()
+    val viewState by viewModel.resultViewState.collectAsStateWithLifecycle()
 
     when (viewState) {
-        is BookSearchResultState.Loading -> LoadingView()
-        is BookSearchResultState.Error -> ShowErrorMessage(
-            errorMessage = (viewState as BookSearchResultState.Error).errorMessage,
+        ResultViewState.Loading -> LoadingView()
+        ResultViewState.Error -> ShowErrorMessage(
+            errorMessage = "Something went wrong...",
+            doAfterErrorIsShown = goBack,
+        )
+        ResultViewState.NoInternetConnection -> ShowErrorMessage(
+            errorMessage = "No Internet Connection",
             doAfterErrorIsShown = goBack,
         )
 
-        is BookSearchResultState.EmptyResult -> NoResultView(onButtonClick = goBack)
-        is BookSearchResultState.Success -> ResultListView(
-            (viewState as BookSearchResultState.Success).books,
-            viewModel::getAuthorText,
+        ResultViewState.Empty -> NoResultView(onButtonClick = goBack)
+        is ResultViewState.Success -> ResultListView(
+            (viewState as ResultViewState.Success).books,
         )
     }
 }
@@ -89,8 +92,7 @@ private fun NoResultView(onButtonClick: () -> Unit) {
 
 @Composable
 private fun ResultListView(
-    books: List<Book>,
-    getAuthorText: (List<String>) -> String,
+    books: List<Book>
 ) {
     LazyColumn(
         modifier = Modifier
@@ -101,12 +103,25 @@ private fun ResultListView(
             with(book) {
                 ResultListItem(
                     title,
-                    getAuthorText(book.authors),
+                    prepareAuthorText(book.authors),
                     book.imageUrl,
                 )
             }
         }
     }
+}
+
+private fun prepareAuthorText(authorsList: List<String>): String {
+    if (authorsList.isEmpty()) {
+        return "Unknown"
+    }
+
+    var authors = ""
+    authorsList.forEach { a ->
+        authors += if (authors.isNotEmpty()) ", $a" else a
+    }
+
+    return authors.ifEmpty { "Unknown" }
 }
 
 @Composable
@@ -153,7 +168,7 @@ private fun ResultListPreview() {
         listOf(
             Book("Title", listOf("Author"), ""),
         ),
-    ) { "Author" }
+    )
 }
 
 @Preview(showBackground = true)
