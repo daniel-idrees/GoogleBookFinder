@@ -4,8 +4,8 @@ import com.example.core.util.runSuspendCatching
 import com.example.data.dto.mapper.toBookList
 import com.example.data.network.BookFinderService
 import com.example.domain.model.BookDataResult
-import com.example.domain.model.getErrorResult
 import com.example.domain.repository.BookRepository
+import java.io.IOException
 import javax.inject.Inject
 
 internal class BookRepositoryImpl @Inject constructor(
@@ -24,4 +24,11 @@ internal class BookRepositoryImpl @Inject constructor(
         }.getOrElse {
             getErrorResult(it)
         }
+
+    private fun getErrorResult(throwable: Throwable): BookDataResult {
+        return when (throwable) {
+            is IOException -> BookDataResult.NoInternetConnection
+            else -> BookDataResult.Error
+        }
+    }
 }
