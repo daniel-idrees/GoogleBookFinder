@@ -1,5 +1,6 @@
 package com.example.data.dto
 
+import com.example.data.model.Book
 import com.example.data.model.mapper.toBookList
 import com.example.data.network.model.ImageLinks
 import com.example.data.network.model.Item
@@ -9,7 +10,6 @@ import com.example.data.utils.FakeObjects.bookTitle
 import com.example.data.utils.FakeObjects.fakeBookList
 import com.example.data.utils.FakeObjects.fakeResponse
 import com.example.data.utils.FakeObjects.thumbnailUrlWithHttps
-import com.example.domain.model.Book
 import io.kotest.matchers.shouldBe
 import org.junit.Test
 

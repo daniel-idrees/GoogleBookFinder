@@ -1,17 +1,19 @@
 package com.example.data.repository
 
+import app.cash.turbine.test
 import com.example.data.common.MainDispatcherRule
-import com.example.data.network.BookFinderService
+import com.example.data.model.Book
+import com.example.data.model.BookDataResult
+import com.example.data.network.BookNetworkDataSource
 import com.example.data.utils.FakeObjects.authorList
 import com.example.data.utils.FakeObjects.bookTitle
 import com.example.data.utils.FakeObjects.emptySearchResult
 import com.example.data.utils.FakeObjects.fakeResponse
 import com.example.data.utils.FakeObjects.queryString
 import com.example.data.utils.FakeObjects.thumbnailUrlWithHttps
-import com.example.domain.model.Book
-import com.example.domain.model.BookDataResult
 import io.kotest.matchers.shouldBe
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.doReturn
@@ -25,42 +27,61 @@ internal class BookNetworkRepositoryTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private val bookFinderService: BookFinderService = mock()
+    private val network: BookNetworkDataSource = mock()
 
-    private val subject = BookNetworkRepository(bookFinderService)
+    private val subject by lazy { BookNetworkRepository(network) }
 
     @Test
     fun `getBooks should return success when api response is successful and list is not empty`() =
-        runBlocking {
+        runTest {
+            // when
+            whenever(network.searchBooks(queryString)) doReturn fakeResponse
+
+            // then
+            val result = subject.searchBooks(queryString)
+            verify(network).searchBooks(queryString)
+            verifyNoMoreInteractions(network)
+
             val expected = listOf(Book(bookTitle, authorList, thumbnailUrlWithHttps))
 
-            whenever(bookFinderService.getBookList(queryString)) doReturn fakeResponse
-            val result = subject.getBooks(queryString)
-            verify(bookFinderService).getBookList(queryString)
-            verifyNoMoreInteractions(bookFinderService)
-
-            result shouldBe com.example.domain.model.BookDataResult.Success(expected)
+            result.test {
+                awaitItem() shouldBe BookDataResult.Success(expected)
+                cancelAndIgnoreRemainingEvents()
+            }
         }
 
     @Test
     fun `getBooks should return empty when api response is successful and list is empty`() =
-        runBlocking {
-            whenever(bookFinderService.getBookList(queryString)) doReturn emptySearchResult
-            val result = subject.getBooks(queryString)
-            verify(bookFinderService).getBookList(queryString)
-            verifyNoMoreInteractions(bookFinderService)
-            result shouldBe com.example.domain.model.BookDataResult.Empty
+        runTest {
+            // when
+            whenever(network.searchBooks(queryString)) doReturn emptySearchResult
+
+            // then
+            val result = subject.searchBooks(queryString)
+            verify(network).searchBooks(queryString)
+            verifyNoMoreInteractions(network)
+
+            result.test {
+                awaitItem() shouldBe BookDataResult.Empty
+                cancelAndIgnoreRemainingEvents()
+            }
         }
 
 
     @Test
     fun `getBooks should return general error when api response throws general exception`() =
-        runBlocking {
-            whenever(bookFinderService.getBookList(queryString)) doThrow IllegalArgumentException()
-            val result = subject.getBooks(queryString)
-            verify(bookFinderService).getBookList(queryString)
-            verifyNoMoreInteractions(bookFinderService)
-            result shouldBe com.example.domain.model.BookDataResult.Error
+        runTest {
+            // when
+            whenever(network.searchBooks(queryString)) doThrow IllegalArgumentException()
+
+            // then
+            val result = subject.searchBooks(queryString)
+            verify(network).searchBooks(queryString)
+            verifyNoMoreInteractions(network)
+
+            result.test {
+                awaitItem() shouldBe BookDataResult.Error
+                cancelAndIgnoreRemainingEvents()
+            }
         }
 }
-

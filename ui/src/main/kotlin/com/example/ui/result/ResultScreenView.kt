@@ -211,7 +211,7 @@ private fun ResultListPreview() {
     MainView(
         viewState = ResultViewState.Success(
             listOf(
-                com.example.data.model.Book("Title", listOf("Author"), ""),
+                Book("Title", listOf("Author"), ""),
             )
         )
     ) {}

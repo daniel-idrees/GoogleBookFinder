@@ -1,10 +1,10 @@
 package com.example.data.utils
 
+import com.example.data.model.Book
 import com.example.data.network.model.ImageLinks
 import com.example.data.network.model.Item
 import com.example.data.network.model.SearchResult
 import com.example.data.network.model.VolumeInfo
-import com.example.domain.model.Book
 
 internal object FakeObjects {
     val queryString = "fakeQuery"
