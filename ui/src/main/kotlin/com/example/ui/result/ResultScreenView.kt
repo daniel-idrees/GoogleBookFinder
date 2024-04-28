@@ -1,5 +1,6 @@
 package com.example.ui.result
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,7 +24,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.model.Book
+import com.example.ui.result.action.ResultAction
 import com.example.ui.result.state.ResultViewState
+import com.example.ui.result.uievent.ResultUiEvent
 import com.example.ui.result.viewmodel.ResultViewModel
 import com.example.ui.views.BookImageView
 import com.example.ui.views.LoadingView
@@ -32,31 +36,69 @@ import com.example.ui.views.spaceS
 internal fun ResultScreenView(
     viewModel: ResultViewModel,
     goBack: () -> Unit,
+    navigateToDetails: () -> Unit
 ) {
+    val context = LocalContext.current
     val viewState by viewModel.resultViewState.collectAsStateWithLifecycle()
 
+    LaunchedEffect(viewModel.events) {
+        viewModel.events.collect { event ->
+            when (event) {
+                ResultUiEvent.NavigateToDetails -> navigateToDetails()
+                ResultUiEvent.ShowError -> showErrorMessage(
+                    context = context,
+                    errorMessage = "Something went wrong ..."
+                ) { viewModel.onAction(ResultAction.AfterErrorShownAction) }
+
+                ResultUiEvent.ShowNoInternetConnectionError -> showErrorMessage(
+                    context = context,
+                    errorMessage = "No Internet Connection ..."
+                ) { viewModel.onAction(ResultAction.AfterErrorShownAction) }
+
+                ResultUiEvent.NavigateBack -> goBack()
+            }
+        }
+    }
+
+    MainView(viewState, viewModel::onAction)
+}
+
+@Composable
+private fun MainView(viewState: ResultViewState, onAction: (ResultAction) -> Unit) {
     when (viewState) {
         ResultViewState.Loading -> LoadingView()
-        ResultViewState.Error -> ShowErrorMessage(
-            errorMessage = "Something went wrong...",
-            doAfterErrorIsShown = goBack,
-        )
-        ResultViewState.NoInternetConnection -> ShowErrorMessage(
-            errorMessage = "No Internet Connection",
-            doAfterErrorIsShown = goBack,
-        )
-
-        ResultViewState.Empty -> NoResultView(onButtonClick = goBack)
+        ResultViewState.Error -> ErrorView(onAction = onAction)
+        ResultViewState.NoInternetConnection -> NoInternetView(onAction = onAction)
+        ResultViewState.Empty -> NoResultView(onAction = onAction)
         is ResultViewState.Success -> ResultListView(
-            (viewState as ResultViewState.Success).books,
+            viewState.books,
         )
     }
 }
 
 @Composable
-private fun ShowErrorMessage(errorMessage: String, doAfterErrorIsShown: () -> Unit) {
+private fun ErrorView(onAction: (ResultAction) -> Unit) {
+    onAction.invoke(ResultAction.ErrorAction)
+    /**
+     * No view for now
+     */
+}
+
+@Composable
+private fun NoInternetView(onAction: (ResultAction) -> Unit) {
+    onAction.invoke(ResultAction.NoInternetConnectionAction)
+    /**
+     * No view for now
+     */
+}
+
+private fun showErrorMessage(
+    context: Context,
+    errorMessage: String,
+    doAfterErrorIsShown: () -> Unit
+) {
     Toast.makeText(
-        LocalContext.current,
+        context,
         errorMessage,
         Toast.LENGTH_LONG,
     ).show()
@@ -65,7 +107,7 @@ private fun ShowErrorMessage(errorMessage: String, doAfterErrorIsShown: () -> Un
 }
 
 @Composable
-private fun NoResultView(onButtonClick: () -> Unit) {
+private fun NoResultView(onAction: (ResultAction) -> Unit) {
     Column(
         modifier = Modifier.padding(spaceS),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -79,7 +121,9 @@ private fun NoResultView(onButtonClick: () -> Unit) {
             modifier = Modifier
                 .padding(horizontal = 60.dp)
                 .fillMaxWidth(),
-            onClick = onButtonClick,
+            onClick = {
+                onAction(ResultAction.GoBackButtonClicked)
+            },
         ) {
             Text(
                 textAlign = TextAlign.Center,
@@ -139,13 +183,13 @@ private fun ResultListItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             BookImageView(imageUrl)
-            Content(title, authorsList)
+            BookDetail(title, authorsList)
         }
     }
 }
 
 @Composable
-private fun Content(
+private fun BookDetail(
     title: String,
     authorText: String,
 ) {
@@ -164,15 +208,19 @@ private fun Content(
 @Preview(showBackground = true)
 @Composable
 private fun ResultListPreview() {
-    ResultListView(
-        listOf(
-            Book("Title", listOf("Author"), ""),
-        ),
-    )
+    MainView(
+        viewState = ResultViewState.Success(
+            listOf(
+                Book("Title", listOf("Author"), ""),
+            )
+        )
+    ) {}
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun EmptyListPreview() {
-    NoResultView {}
+    MainView(
+        viewState = ResultViewState.Empty
+    ) {}
 }

@@ -21,7 +21,11 @@ fun MainNavHost() {
         resultScreen {
             ResultScreenView(
                 viewModel = hiltViewModel(),
-            ) { navController.popBackStack(SearchScreen.route, false) }
+                goBack = { navController.popBackStack(SearchScreen.route, false) },
+                navigateToDetails = {
+                    // no-op for now
+                }
+            )
         }
 
         searchScreen {
