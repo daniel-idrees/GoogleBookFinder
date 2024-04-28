@@ -7,7 +7,7 @@ android {
 
 
 dependencies {
-    api project(':core')
+    implementation project(':core')
 
     // Retrofit
     implementation "com.squareup.retrofit2:retrofit:2.11.0"
