@@ -1,7 +1,7 @@
-package com.example.ui.nav
+package com.example.ui.mainnav
 
 import android.net.Uri
-import com.example.ui.result.navigation.RESULT_ROUTE
+import com.example.ui.result.nav.RESULT_ROUTE
 import com.example.ui.search.nav.SEARCH_ROUTE
 
 sealed class Screen(val route: String)

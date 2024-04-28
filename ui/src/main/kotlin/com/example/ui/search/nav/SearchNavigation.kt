@@ -7,7 +7,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navOptions
-import com.example.ui.nav.SearchScreen
+import com.example.ui.mainnav.SearchScreen
 
 const val SEARCH_ROUTE = "search"
 

@@ -6,7 +6,7 @@ import com.example.common.MainDispatcherRule
 import com.example.domain.model.Book
 import com.example.domain.model.BookDataResult
 import com.example.domain.usecase.GetBookListUseCase
-import com.example.ui.result.navigation.SEARCH_QUERY_ARG
+import com.example.ui.result.nav.SEARCH_QUERY_ARG
 import com.example.ui.result.state.ResultViewState
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.flow.MutableStateFlow

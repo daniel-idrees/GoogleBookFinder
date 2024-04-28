@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.model.BookDataResult
 import com.example.domain.usecase.GetBookListUseCase
-import com.example.ui.result.navigation.SEARCH_QUERY_ARG
+import com.example.ui.result.nav.SEARCH_QUERY_ARG
 import com.example.ui.result.state.ResultViewState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
