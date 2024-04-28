@@ -6,8 +6,10 @@ import com.example.common.MainDispatcherRule
 import com.example.domain.model.Book
 import com.example.domain.model.BookDataResult
 import com.example.domain.usecase.GetBookListUseCase
+import com.example.ui.result.action.ResultAction
 import com.example.ui.result.nav.SEARCH_QUERY_ARG
 import com.example.ui.result.state.ResultViewState
+import com.example.ui.result.uievent.ResultUiEvent
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -40,6 +42,7 @@ internal class ResultViewModelTest {
         ResultViewModel(
             getBookListUseCase,
             savedStateHandle,
+            mainDispatcherRule.testDispatcher
         )
     }
 
@@ -48,11 +51,9 @@ internal class ResultViewModelTest {
         subject.resultViewState.value shouldBe ResultViewState.Loading
     }
 
-
-
     @Test
     fun `view state should be success if the usecase returns list of books`() = runTest {
-       // when
+        // when
         val bookList = listOf(Book("", emptyList(), ""))
         whenever(getBookListUseCase("query")) doReturn flowOf(BookDataResult.Success(bookList))
 
@@ -104,4 +105,45 @@ internal class ResultViewModelTest {
                 cancelAndIgnoreRemainingEvents()
             }
         }
+
+
+    @Test
+    fun `ResultItemClickAction should send the ui event to navigate to details`() = runTest {
+        subject.events.test {
+            subject.onAction(ResultAction.ResultItemClicked)
+            awaitItem() shouldBe ResultUiEvent.NavigateToDetails
+        }
+    }
+
+    @Test
+    fun `NoInternetConnectionAction should send the ui event to show internet error`() = runTest {
+        subject.events.test {
+            subject.onAction(ResultAction.NoInternetConnectionAction)
+            awaitItem() shouldBe ResultUiEvent.ShowNoInternetConnectionError
+        }
+    }
+
+    @Test
+    fun `ErrorAction should send the ui event to show error`() = runTest {
+        subject.events.test {
+            subject.onAction(ResultAction.ErrorAction)
+            awaitItem() shouldBe ResultUiEvent.ShowError
+        }
+    }
+
+    @Test
+    fun `GoBackButtonClicked should send the ui event to navigate back`() = runTest {
+        subject.events.test {
+            subject.onAction(ResultAction.GoBackButtonClicked)
+            awaitItem() shouldBe ResultUiEvent.NavigateBack
+        }
+    }
+
+    @Test
+    fun `AfterErrorShownAction should send the ui event to navigate back`() = runTest {
+        subject.events.test {
+            subject.onAction(ResultAction.AfterErrorShownAction)
+            awaitItem() shouldBe ResultUiEvent.NavigateBack
+        }
+    }
 }
