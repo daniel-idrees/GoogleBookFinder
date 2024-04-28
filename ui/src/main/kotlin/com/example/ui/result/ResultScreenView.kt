@@ -2,6 +2,7 @@ package com.example.ui.result
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -72,6 +73,7 @@ private fun MainView(viewState: ResultViewState, onAction: (ResultAction) -> Uni
         ResultViewState.Empty -> NoResultView(onAction = onAction)
         is ResultViewState.Success -> ResultListView(
             viewState.books,
+            onAction = onAction
         )
     }
 }
@@ -136,7 +138,8 @@ private fun NoResultView(onAction: (ResultAction) -> Unit) {
 
 @Composable
 private fun ResultListView(
-    books: List<Book>
+    books: List<Book>,
+    onAction: (ResultAction) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -149,6 +152,7 @@ private fun ResultListView(
                     title,
                     prepareAuthorText(book.authors),
                     book.imageUrl,
+                    onAction
                 )
             }
         }
@@ -173,11 +177,13 @@ private fun ResultListItem(
     title: String,
     authorsList: String,
     imageUrl: String?,
+    onAction: (ResultAction) -> Unit,
 ) {
     Card(
         Modifier
             .fillMaxWidth()
-            .padding(spaceS),
+            .padding(spaceS)
+            .clickable { onAction(ResultAction.ResultItemClicked) }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically
