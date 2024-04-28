@@ -26,6 +26,7 @@ fun MainNavHost() {
 
         searchScreen {
             SearchScreenView(
+                viewModel = hiltViewModel(),
                 navigateToResult = navController::navigateToResult,
             )
         }
