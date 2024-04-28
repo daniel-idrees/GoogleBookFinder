@@ -1,9 +1,8 @@
 package com.example.domain.usecase
 
 import app.cash.turbine.test
-import com.example.domain.model.Book
-import com.example.domain.model.BookDataResult
-import com.example.domain.repository.BookRepository
+import com.example.data.model.Book
+import com.example.data.model.BookDataResult
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
@@ -14,7 +13,7 @@ import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 
 internal class GetBookListUseCaseTest {
-    private val bookRepository: BookRepository = mock()
+    private val bookRepository: com.example.data.repository.BookRepository = mock()
     private val subject by lazy {
         GetBookListUseCase(bookRepository)
     }

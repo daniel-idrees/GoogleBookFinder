@@ -3,8 +3,8 @@ package com.example.ui.result.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.example.common.MainDispatcherRule
-import com.example.domain.model.Book
-import com.example.domain.model.BookDataResult
+import com.example.data.model.Book
+import com.example.data.model.dto.BookDataResult
 import com.example.domain.usecase.GetBookListUseCase
 import com.example.ui.result.action.ResultAction
 import com.example.ui.result.nav.SEARCH_QUERY_ARG
@@ -54,8 +54,8 @@ internal class ResultViewModelTest {
     @Test
     fun `view state should be success if the usecase returns list of books`() = runTest {
         // when
-        val bookList = listOf(Book("", emptyList(), ""))
-        whenever(getBookListUseCase("query")) doReturn flowOf(BookDataResult.Success(bookList))
+        val bookList = listOf(com.example.data.model.Book("", emptyList(), ""))
+        whenever(getBookListUseCase("query")) doReturn flowOf(com.example.data.model.dto.BookDataResult.Success(bookList))
 
         // then
         subject.resultViewState.test {
@@ -69,7 +69,7 @@ internal class ResultViewModelTest {
     @Test
     fun `view state should be empty if the usecase returns empty list`() = runTest {
         // when
-        whenever(getBookListUseCase("query")) doReturn flowOf(BookDataResult.Empty)
+        whenever(getBookListUseCase("query")) doReturn flowOf(com.example.data.model.dto.BookDataResult.Empty)
 
         // then
         subject.resultViewState.test {
@@ -82,7 +82,7 @@ internal class ResultViewModelTest {
     @Test
     fun `view state should be error if the usecase returns error`() = runTest {
         // when
-        whenever(getBookListUseCase("query")) doReturn flowOf(BookDataResult.Error)
+        whenever(getBookListUseCase("query")) doReturn flowOf(com.example.data.model.dto.BookDataResult.Error)
 
         // then
         subject.resultViewState.test {
@@ -96,7 +96,7 @@ internal class ResultViewModelTest {
     fun `view state should be no internet connection if the usecase returns  no internet connection`() =
         runTest {
             // when
-            whenever(getBookListUseCase("query")) doReturn flowOf(BookDataResult.NoInternetConnection)
+            whenever(getBookListUseCase("query")) doReturn flowOf(com.example.data.model.dto.BookDataResult.NoInternetConnection)
 
             // then
             subject.resultViewState.test {

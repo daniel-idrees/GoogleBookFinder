@@ -1,9 +1,9 @@
 package com.example.ui.result.state
 
-import com.example.domain.model.Book
+import com.example.data.model.Book
 
 sealed interface ResultViewState {
-    data class Success(val books: List<Book>) : ResultViewState
+    data class Success(val books: List<com.example.data.model.Book>) : ResultViewState
     object Error : ResultViewState
     object Loading : ResultViewState
     object Empty : ResultViewState

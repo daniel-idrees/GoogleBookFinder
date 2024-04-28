@@ -1,6 +1,9 @@
 package com.example.data.dto
 
-import com.example.data.dto.mapper.toBookList
+import com.example.data.model.mapper.toBookList
+import com.example.data.network.model.ImageLinks
+import com.example.data.network.model.Item
+import com.example.data.network.model.VolumeInfo
 import com.example.data.utils.FakeObjects.authorList
 import com.example.data.utils.FakeObjects.bookTitle
 import com.example.data.utils.FakeObjects.fakeBookList

@@ -1,0 +1,25 @@
+package com.example.data.network.model
+
+internal data class VolumeInfo(
+    val title: String? = null,
+    val publishedDate: String? = null,
+    val industryIdentifiers: List<IndustryIdentifiers>? = null,
+    val readingModes: ReadingModes? = null,
+    val printType: String? = null,
+    val categories: List<String>? = null,
+    val maturityRating: String? = null,
+    val allowAnonLogging: Boolean? = null,
+    val contentVersion: String? = null,
+    val panelizationSummary: PanelizationSummary? = null,
+    val imageLinks: ImageLinks? = null,
+    val language: String? = null,
+    val previewLink: String? = null,
+    val infoLink: String? = null,
+    val canonicalVolumeLink: String? = null,
+    val authors: List<String>? = null,
+    val pageCount: Long? = null,
+    val subtitle: String? = null,
+    val publisher: String? = null,
+    val description: String? = null,
+    val seriesInfo: SeriesInfo? = null,
+)

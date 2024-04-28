@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.di.DefaultDispatcher
-import com.example.domain.model.BookDataResult
+import com.example.data.model.BookDataResult
 import com.example.domain.usecase.GetBookListUseCase
 import com.example.ui.result.action.ResultAction
 import com.example.ui.result.nav.SEARCH_QUERY_ARG
@@ -55,7 +55,7 @@ class ResultViewModel @Inject constructor(
                         BookDataResult.Empty -> ResultViewState.Empty
                         BookDataResult.Error -> ResultViewState.Error
                         BookDataResult.NoInternetConnection -> ResultViewState.NoInternetConnection
-                        is BookDataResult.Success -> ResultViewState.Success(result.data)
+                        is BookDataResult.Success -> ResultViewState.Success(result.books)
                     }
                 }.catch { emit(ResultViewState.Error) }
         }.stateIn(

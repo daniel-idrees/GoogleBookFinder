@@ -1,9 +1,9 @@
 package com.example.data.utils
 
-import com.example.data.dto.ImageLinks
-import com.example.data.dto.Item
-import com.example.data.dto.SearchBookResponse
-import com.example.data.dto.VolumeInfo
+import com.example.data.network.model.ImageLinks
+import com.example.data.network.model.Item
+import com.example.data.network.model.SearchResult
+import com.example.data.network.model.VolumeInfo
 import com.example.domain.model.Book
 
 internal object FakeObjects {
@@ -14,7 +14,7 @@ internal object FakeObjects {
     val thumbnailUrlWithHttp = "http://fakeUrl"
     val thumbnailUrlWithHttps = "https://fakeUrl"
 
-    val fakeResponse = SearchBookResponse(
+    val fakeResponse = SearchResult(
         "",
         1,
         listOf(
@@ -30,7 +30,7 @@ internal object FakeObjects {
 
     val fakeBookList = listOf(Book(bookTitle, authorList, thumbnailUrlWithHttps))
 
-    val emptySearchBookResponse = SearchBookResponse(
+    val emptySearchResult = SearchResult(
         "",
         1,
         emptyList(),

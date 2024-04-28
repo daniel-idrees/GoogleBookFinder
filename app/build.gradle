@@ -49,11 +49,7 @@ android {
 }
 
 dependencies {
-    implementation project(':domain')
     implementation project(':ui')
-    implementation project(':data')
-    implementation project(':core')
-    testImplementation project(':core')
 
     implementation 'androidx.core:core-ktx:1.12.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2'

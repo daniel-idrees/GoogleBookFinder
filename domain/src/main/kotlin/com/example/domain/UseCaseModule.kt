@@ -1,6 +1,6 @@
 package com.example.domain
 
-import com.example.domain.repository.BookRepository
+import com.example.data.repository.BookRepository
 import com.example.domain.usecase.GetBookListUseCase
 import dagger.Module
 import dagger.Provides

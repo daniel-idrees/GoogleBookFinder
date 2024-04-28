@@ -23,7 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.domain.model.Book
+import com.example.data.model.Book
 import com.example.ui.result.action.ResultAction
 import com.example.ui.result.state.ResultViewState
 import com.example.ui.result.uievent.ResultUiEvent
@@ -211,7 +211,7 @@ private fun ResultListPreview() {
     MainView(
         viewState = ResultViewState.Success(
             listOf(
-                Book("Title", listOf("Author"), ""),
+                com.example.data.model.Book("Title", listOf("Author"), ""),
             )
         )
     ) {}

@@ -1,9 +1,8 @@
 package com.example.domain.usecase
 
-import com.example.domain.model.BookDataResult
-import com.example.domain.repository.BookRepository
+import com.example.data.model.BookDataResult
+import com.example.data.repository.BookRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 
 class GetBookListUseCase @Inject constructor(
@@ -11,5 +10,5 @@ class GetBookListUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(
         searchQuery: String,
-    ): Flow<BookDataResult> = flowOf(bookRepository.getBooks(searchQuery))
+    ): Flow<BookDataResult> = bookRepository.searchBooks(searchQuery)
 }
