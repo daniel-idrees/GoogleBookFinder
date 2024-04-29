@@ -4,8 +4,8 @@ import com.example.data.model.Book
 
 sealed interface ResultViewState {
     data class Success(val books: List<Book>) : ResultViewState
-    object Error : ResultViewState
-    object Loading : ResultViewState
-    object Empty : ResultViewState
-    object NoInternetConnection: ResultViewState
+    data object Error : ResultViewState
+    data object Loading : ResultViewState
+    data object Empty : ResultViewState
+    data object NoInternetConnection: ResultViewState
 }

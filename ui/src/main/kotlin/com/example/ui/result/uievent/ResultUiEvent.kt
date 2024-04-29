@@ -1,8 +1,8 @@
 package com.example.ui.result.uievent
 
 sealed interface ResultUiEvent {
-    object NavigateToDetails : ResultUiEvent
-    object ShowError : ResultUiEvent
-    object ShowNoInternetConnectionError : ResultUiEvent
-    object NavigateBack : ResultUiEvent
+    data object NavigateToDetails : ResultUiEvent
+    data object ShowError : ResultUiEvent
+    data object ShowNoInternetConnectionError : ResultUiEvent
+    data object NavigateBack : ResultUiEvent
 }

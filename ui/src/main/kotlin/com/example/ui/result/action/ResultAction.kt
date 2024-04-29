@@ -1,9 +1,9 @@
 package com.example.ui.result.action
 
 sealed interface ResultAction {
-    object ResultItemClicked : ResultAction
-    object NoInternetConnectionAction: ResultAction
-    object ErrorAction: ResultAction
-    object GoBackButtonClicked: ResultAction
-    object AfterErrorShownAction: ResultAction
+    data object ResultItemClicked : ResultAction
+    data object NoInternetConnectionAction: ResultAction
+    data object ErrorAction: ResultAction
+    data object GoBackButtonClicked: ResultAction
+    data object AfterErrorShownAction: ResultAction
 }
