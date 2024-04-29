@@ -7,8 +7,8 @@ The aim of this project is to share an example of writing testable and maintaina
 In this repository you'll find:
 
  - Kotlin
- - Model-View-ViewModel (MVVM) architectural pattern
  - Multi Module
+ - Model-View-ViewModel (MVVM)
  - A single-activity architecture, using Navigation Compose
  - Hilt for dependency injection.
  - Jetpack Compose for building UI
@@ -19,10 +19,9 @@ In this repository you'll find:
  - Dependency injection using Hilt.
  - Coil for Image loading.
 
- - Clean architecture.
+ - App Architecture as per [Google's Recommendation](https://developer.android.com/topic/architecture)
    - A presentation layer that contains Compose Views and a ViewModel.
    - A domain layer with a use case.
    - A data layer with a repository and a network data source that uses retrofit for network calls.
-   - Domain layer is independent. Both Data and Presentation layers depend on Domain.
 
 
